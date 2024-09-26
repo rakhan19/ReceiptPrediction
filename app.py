@@ -4,7 +4,7 @@ from receiptPrediction import loadModel
 
 app = Flask(__name__)
 
-model = loadModel()
+model, maxCount = loadModel()
 #routing for web
 @app.route('/')
 def home():
@@ -19,9 +19,9 @@ def predict():
     # Prepare input for the model
     input_tensor = torch.tensor([[month]], dtype=torch.float32)
     with torch.no_grad():
-        prediction = model(input_tensor).item()
-
-    return jsonify({'Predicted number of receipts': prediction})
+        normalPrediction = model(input_tensor).item()
+        prediction = normalPrediction * maxCount
+    return jsonify({'predicted_receipts': prediction})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000, debug=True)
