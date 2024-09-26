@@ -30,4 +30,22 @@ class receiptPrediction(nn.Module):
     
 #Training
 def train(monthlyData):
-    X = torch.tensor(monthlyData['Month'].values, )
+    X = torch.tensor(monthlyData['Month'].values, dtype=torch.float32).view(-1,1)
+    y = torch.tensor(monthlyData['Receipt_Count'].values, dtype=torch.float32).view(-1,1)
+    #Initialize model, loss, and optim
+    model = receiptPrediction()
+    criterion = nn.MSELoss()
+    optimizer = optim.Adam(model.parameters(), lr=0.01)
+
+    #training iterations
+    for epoch in range(50):
+        model.train()
+        optimizer.zero_grad()
+        outputs = model(X)
+        loss = criterion(outputs, y)
+        loss.backward()
+        optimizer.step()
+    
+    #save model
+    torch.save(model.state_dict(), 'model.pth')
+    return model
