@@ -11,7 +11,7 @@ def preprocessing(file):
     data['# Date'] = pd.to_datetime(data['# Date'])
     data['Month'] = data['# Date'].dt.month
 
-    monthlyData = data.groupby('Month')['receiptCount'].sum().reset_index()
+    monthlyData = data.groupby('Month')['Receipt_Count'].sum().reset_index()
     return monthlyData
 
 
@@ -61,6 +61,7 @@ def loadModel():
 def main():
     monthlyData = preprocessing('data_daily.csv')
     train(monthlyData)
+    print('Training complete')
 
 if __name__ == '__main__':
     main()
