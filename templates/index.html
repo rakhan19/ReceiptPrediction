@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Receipt Prediction</title>
+    <script>
+        async function predictRecipts() {
+            const month = document.getElementById('month').value;
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `month=${month}`
+            });
+            const result = await response.json();
+            document.getElementById('result').innerText = `Predicted Receipts: ${result.predicted_receipts}`;
+        }
+    </script>
+</head>
+<body>
+    <h1>Receipt Prediction</h1>
+    <label for="month">Enter Month (1-12):</label>
+    <input type="number" id="month" min="1" max="12" required>
+    <button onclick="predictReceipts()">Predict</button>
+    <p id="result"></p>
+</body>
+</html>
