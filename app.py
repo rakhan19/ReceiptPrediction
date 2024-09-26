@@ -12,17 +12,16 @@ def home():
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    data = request.json
-    month = data.get('month', None)
-
-    if month is None:
-        return jsonify({'error': 'Please select a month'}), 400
+    month = request.form.get('month', type=int)
+    if month is None or month < 1 or month > 12:
+        return jsonify({"error": "Invalid month"}), 400
     
-    input = torch.tensor([[month]], dtype=torch.float32)
+    # Prepare input for the model
+    input_tensor = torch.tensor([[month]], dtype=torch.float32)
     with torch.no_grad():
-        prediction = model(input).item
+        prediction = model(input_tensor).item()
 
     return jsonify({'Predicted number of receipts': prediction})
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, debug=True)
