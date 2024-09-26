@@ -49,3 +49,18 @@ def train(monthlyData):
     #save model
     torch.save(model.state_dict(), 'model.pth')
     return model
+
+#load model
+def loadModel():
+    model = receiptPrediction()
+    model.load_state_dict(torch.load('model.pth'))
+    model.eval()
+    return model
+
+#training routine
+def main():
+    monthlyData = preprocessing('data_daily.csv')
+    train(monthlyData)
+
+if __name__ == '__main__':
+    main()
