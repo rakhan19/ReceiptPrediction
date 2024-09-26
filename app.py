@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, render_template
 import torch
 from receiptPrediction import loadModel
 
@@ -6,6 +6,10 @@ app = Flask(__name__)
 
 model = loadModel()
 #routing for web
+@app.route('/')
+def home():
+    return render_template('index.html')
+
 @app.route('/predict', methods=['POST'])
 def predict():
     data = request.json
