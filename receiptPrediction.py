@@ -8,10 +8,10 @@ import json
 def preprocessing(file):
     data = pd.read_csv(file)
 
-    #extract the data
+    #extract the data for month
     data['# Date'] = pd.to_datetime(data['# Date'])
     data['Month'] = data['# Date'].dt.month
-
+    #sum up the months and group them
     monthlyData = data.groupby('Month')['Receipt_Count'].sum().reset_index()
     return monthlyData
 
@@ -24,7 +24,7 @@ class receiptPrediction(nn.Module):
         self.fc1 = nn.Linear(1, 16)
         self.fc2 = nn.Linear(16, 8)
         self.fc3 = nn.Linear(8, 1)
-
+    #relu is very popular option and sufficient for this task
     def forward(self, x):
         x = torch.relu(self.fc1(x))
         x = torch.relu(self.fc2(x))
@@ -33,17 +33,20 @@ class receiptPrediction(nn.Module):
     
 #Training
 def train(monthlyData):
+    #normalize the data, leads to better estimation
     maxCount = monthlyData['Receipt_Count'].max()
     monthlyData['Receipt_Count'] /= maxCount
 
+    #load up the data
     X = torch.tensor(monthlyData['Month'].values, dtype=torch.float32).view(-1,1)
     y = torch.tensor(monthlyData['Receipt_Count'].values, dtype=torch.float32).view(-1,1)
     #Initialize model, loss, and optim
+    #MSE and Adam both chosen
     model = receiptPrediction()
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.01)
 
-    #training iterations
+    #training iterations (200)
     for epoch in range(200):
         model.train()
         optimizer.zero_grad()
@@ -72,8 +75,10 @@ def loadModel():
 
 #training routine
 def main():
+    #process the data
     monthlyData = preprocessing('data_daily.csv')
     print(monthlyData)
+    #train the model
     model = train(monthlyData)
     print('Training complete')
 
