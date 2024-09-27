@@ -10,17 +10,20 @@ model, maxCount = loadModel()
 def home():
     return render_template('index.html')
 
+#predict page
 @app.route('/predict', methods=['POST'])
 def predict():
+    #grab the entered month
     month = request.form.get('month', type=int)
     if month is None or month < 1 or month > 12:
         return jsonify({"error": "Invalid month"}), 400
     
-    # Prepare input for the model
+    #Prepare input for the model
     input_tensor = torch.tensor([[month]], dtype=torch.float32)
     with torch.no_grad():
         normalPrediction = model(input_tensor).item()
         prediction = normalPrediction * maxCount
+    #return the prediction
     return jsonify({'predicted_receipts': prediction})
 
 if __name__ == '__main__':
